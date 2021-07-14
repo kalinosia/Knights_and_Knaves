@@ -19,8 +19,9 @@ CKnave = Symbol("C is a Knave")
 # A says "I am both a knight and a knave."
 knowledge0 = And(
     Or(AKnight, AKnave),
-    Implication(AKnight, (AKnight and AKnave)),
-    #Implication(AKnave, Not(AKnight and AKnave))
+    Not(And(AKnight, AKnave)),
+    Implication(AKnight, And(AKnight, AKnave)),
+    Implication(AKnave, Not(And(AKnight, AKnave)))
 )
 # Puzzle 1
 # A says "We are both knaves."
@@ -28,7 +29,7 @@ knowledge0 = And(
 knowledge1 = And(
     Or(AKnight, AKnave),
     Or(BKnight, BKnave),
-    Not(And(AKnight, AKnave)),
+    Not(And(AKnight, AKnave)), #but not both
     Not(And(BKnight, BKnave)),
     #Or(Not(AKnight), And(AKnave, BKnave)),
     #Implication(A, B) = Not(A) or B
@@ -68,7 +69,10 @@ knowledge3 = And(
 
     # A says either "I am a knight." or "I am a knave.", but you don't know which.
     # #we need this???? probably not because this is has no info
-
+    Or(
+        Implication(AKnight, AKnight),
+        Implication(AKnave, Not(AKnave))
+    ),
     # B says "A said 'I am a knave'."
     Implication(BKnight, Or(
                 Implication(AKnight, AKnave),
@@ -79,11 +83,11 @@ knowledge3 = And(
                 Implication(AKnave, Not(AKnave)))
     )),
     # B says "C is a knave."
-    Biconditional(BKnight, CKnave),
-    Biconditional(BKnave, Not(CKnave)),
+    Implication(BKnight, CKnave),
+    Implication(BKnave, Not(CKnave)),
     # C says "A is a knight."
-    Biconditional(CKnight, AKnight),
-    Biconditional(CKnave, Not(AKnight))
+    Implication(CKnight, AKnight),
+    Implication(CKnave, Not(AKnight))
 )
 '''
 letters=['A', 'B', 'C']
