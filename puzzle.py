@@ -20,8 +20,10 @@ CKnave = Symbol("C is a Knave")
 knowledge0 = And(
     Or(AKnight, AKnave),
     Not(And(AKnight, AKnave)),
-    Implication(AKnight, And(AKnight, AKnave)),
-    Implication(AKnave, Not(And(AKnight, AKnave)))
+    Or(
+        And(AKnight, And(AKnight, AKnave)),
+        And(AKnave, Not(And(AKnight, AKnave)))
+    )
 )
 # Puzzle 1
 # A says "We are both knaves."
@@ -29,13 +31,12 @@ knowledge0 = And(
 knowledge1 = And(
     Or(AKnight, AKnave),
     Or(BKnight, BKnave),
-    Not(And(AKnight, AKnave)), #but not both
+    Not(And(AKnight, AKnave)),
     Not(And(BKnight, BKnave)),
-    #Or(Not(AKnight), And(AKnave, BKnave)),
-    #Implication(A, B) = Not(A) or B
-    Implication(AKnight, And(AKnave, BKnave)),
-    #Or(Not(AKnave), Not(And(AKnave, BKnave)))
-    Implication(AKnave, Not(And(AKnave, BKnave)))
+    Or(
+        And(AKnight, And(AKnave, BKnave)),
+        And(AKnave, Not(And(AKnave, BKnave)))
+    )
 )
 
 # Puzzle 2
@@ -46,13 +47,14 @@ knowledge2 = And(
     Or(BKnight, BKnave),
     Not(And(AKnight, AKnave)),
     Not(And(BKnight, BKnave)),
-    # A says "We are the same kind."
-    # A is Knight and say true (both Knight) OR A is Knave and say not true (both knave is not true) P → Q = ¬P ∨ Q
-    Implication(AKnight, And(AKnight, BKnight)),
-    Implication(AKnave, Not(And(AKnave, BKnave))),
-    # B says "We are of different kinds."
-    Implication(BKnight, (And(AKnave, BKnight))),
-    Implication(BKnave, Not(And(AKnight, BKnave)))
+    Or(
+        And(AKnight, And(AKnight, BKnight)),
+        And(AKnave, Not(And(AKnave, BKnave)))
+    ),
+    Or(
+        And(BKnight, (And(AKnave, BKnight))),
+        And(BKnave, Not(And(AKnight, BKnave)))
+    )
     #Or(And(AKnight, Or(Not(BKnight), (Or(And(AKnight, BKnave), And(AKnave, BKnight))))),  And(AKnave, Or(Not(BKnave),  (Or(Not(And(AKnight, BKnave)), Not(And(AKnave, BKnight)))))))
 )
 
@@ -70,24 +72,45 @@ knowledge3 = And(
     # A says either "I am a knight." or "I am a knave.", but you don't know which.
     # #we need this???? probably not because this is has no info
     Or(
-        Implication(AKnight, AKnight),
-        Implication(AKnave, Not(AKnave))
+        Or(
+            And(AKnight, AKnight),
+            And(AKnave, Not(AKnight))
+        ),
+        Or(
+            And(AKnight, AKnave),
+            And(AKnave, Not(AKnave))
+        )
+
     ),
     # B says "A said 'I am a knave'."
-    Implication(BKnight, Or(
-                Implication(AKnight, AKnave),
-                Implication(AKnave, Not(AKnave))
-    )),
-    Implication(BKnave, Not(Or(
-                Implication(AKnight, AKnave),
-                Implication(AKnave, Not(AKnave)))
-    )),
+    Or(
+        # B is knight
+        And(BKnight,
+            Or(
+                And(AKnight, AKnave),
+                And(AKnave, Not(AKnave))
+            )
+        ),
+        # B is knave
+        And(BKnave, Not(
+            Or(
+                And(AKnight, AKnave),
+                And(AKnave, Not(AKnave))
+            ))
+        )
+    ),
+    # ?????^
+
     # B says "C is a knave."
-    Implication(BKnight, CKnave),
-    Implication(BKnave, Not(CKnave)),
+    Or(
+        And(BKnight, CKnave),
+        And(BKnave, Not(CKnave)),
+    ),
     # C says "A is a knight."
-    Implication(CKnight, AKnight),
-    Implication(CKnave, Not(AKnight))
+    Or(
+        And(CKnight, AKnight),
+        And(CKnave, Not(AKnight))
+    )
 )
 '''
 letters=['A', 'B', 'C']
